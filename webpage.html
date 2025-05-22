@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI Resume Analyzer + Job Matcher with Techpro Login & Registration</title>
+  <style>
+    /* Reset */
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1f1c2c, #928dab);
+      color: #f0f0f5;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 10px;
+      position: relative;
+    }
+
+    /* Login Section */
+    #login-section {
+      background: rgba(255 255 255 / 0.08);
+      backdrop-filter: blur(12px);
+      border-radius: 16px;
+      box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+      width: 360px;
+      padding: 40px 30px 50px 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: all 0.3s ease;
+    }
+
+    #login-section h1 {
+      font-weight: 700;
+      font-size: 2.5rem;
+      letter-spacing: 1.1px;
+      margin-bottom: 30px;
+      color: #fff;
+      text-shadow: 0 2px 10px rgba(255 255 255 / 0.7);
+      user-select: none;
+      font-family: 'Segoe UI Black', 'Segoe UI Bold', sans-serif;
+      text-align: center;
+    }
+
+    .input-group {
+      position: relative;
+      width: 100%;
+      margin-bottom: 32px;
+    }
+    .input-group input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid rgba(255 255 255 / 0.5);
+      padding: 12px 12px 8px 12px;
+      font-size: 16px;
+      color: #fff;
+      outline: none;
+      transition: border-color 0.3s ease;
+    }
+    .input-group input:focus { border-color: #a7c7e7; }
+    .input-group label {
+      position: absolute;
+      top: 14px;
+OBOB      left: 12px;
+OB      color: rgba(255 255 255 / 0.7);
+OB      font-size: 16px;
+OB      pointer-events: none;
+      transition: all 0.25s ease;
+OB      user-select: none;
+    }
+OBOB    .input-group input:focus + label,
+OB    .input-group input:not(:placeholder-shown) + label {
+      top: -10px;
+OBOBOBOBOBOB      font-size: 12px;
+OBOB      color: #a7c7e7;
+OBOBOB      font-weight: 600;
+      letter-spacing: 0.8px;
+OB    }
+
+OBOBOB    #login-section button {
+      width: 100%;
+OB      background: linear-gradient(135deg, #6a85b6, #bac8e0);
+      border: none;
+OB      padding: 14px 0;
+      border-radius: 30px;
+OB      font-weight: 700;
+      font-size: 1.1rem;
+      letter-spacing: 1.2px;
+OB      color: #1f1c2c;
+      cursor: pointer;
+      box-shadow: 0 6px 12px rgba(101, 121, 191, 0.7);
+      transition: all 0.3s ease;
+      user-select: none;
+      margin-bottom: 12px;
+    }
+    #login-section button:hover {
+      background: linear-gradient(135deg, #7f99c6, #d1dbf4);
+      box-shadow: 0 10px 20px rgba(101, 121, 191, 0.9);
+      transform: translateY(-2px);
+    }
+    #toggle-register {
+      background: transparent;
+      color: #a7c7e7;
+      font-weight: 600;
+      font-size: 0.95rem;
+      border: none;
+      cursor: pointer;
+      text-decoration: underline;
+      user-select: none;
+      margin-top: 8px;
+    }
+    #toggle-register:hover { color: #bac8e0; }
+
+    .alert {
+      background: #ff4d4d;
+      color: white;
+      font-weight: 700;
+      padding: 10px 14px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(255, 77, 77, 0.7);
+      user-select: none;
+    }
+    .alert.success {
+      background: #4CAF50;
+      box-shadow: 0 2px 8px rgba(76, 175, 80, 0.7);
+    }
+
+    @media (max-width: 420px) {
+      #login-section { width: 90vw; padding: 30px 20px 40px 20px; }
+      #app { width: 95vw; padding: 20px 15px 60px 15px; }
+      #next-page-btn { right: 15px; bottom: 15px; }
+    }
+
+    #app {
+      max-width: 900px;
+      background: #f4f4f9;
+      padding: 25px 40px 70px 40px;
+      border-radius: 16px;
+      box-shadow: 0 8px 18px rgba(31, 28, 44, 0.4);
+      color: #1f1c2c;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 20px auto; /* Center app on page */
+      display: none;
+      flex-direction: column;
+      position: relative;
+    }
+
+    #header-bar {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      gap: 12px;
+      z-index: 1000;
+    }
+    #header-bar button {
+      padding: 10px 20px;
+      font-weight: 600;
+      font-size: 14px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      user-select: none;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+    #header-bar button:hover { opacity: 0.85; transform: translateY(-1px); }
+    #header-bar button:first-child {
+      background-color: #6a85b6;
+      color: #f4f4f9;
+      box-shadow: 0 4px 8px rgba(106, 133, 182, 0.6);
+    }
+    #header-bar button.logout-btn {
+      background-color: #dc3545;
+      color: white;
+      box-shadow: 0 4px 8px rgba(220, 53, 69, 0.6);
+    }
+
+    h1, h2 { text-align: center; user-select: none; color: #1f1c2c; }
+    #app h2 { margin-top: 20px; margin-bottom: 10px; } /* Spacing for H2 in app */
+     #app p { color: #333; font-size: 1em; line-height: 1.6; }
+
+
+    textarea {
+      width: 100%;
+      height: 180px;
+      padding: 14px 16px;
+      font-size: 16px;
+      border-radius: 12px;
+      border: 1.8px solid #6a85b6;
+      resize: vertical;
+      font-family: inherit;
+      box-sizing: border-box;
+      color: #1f1c2c;
+      transition: border-color 0.3s ease;
+      margin-bottom: 16px;
+    }
+    textarea:focus { border-color: #bac8e0; outline: none; }
+
+    /* General app button style (Analyze Resume) */
+    #app button.main-action-btn {
+      background-color: #6a85b6;
+      border: none;
+      color: white;
+      padding: 14px 28px;
+      font-size: 18px;
+      border-radius: 12px;
+      cursor: pointer;
+      margin-top: 16px;
+      transition: background-color 0.3s ease;
+      user-select: none;
+      font-weight: 700;
+      align-self: center;
+    }
+    #app button.main-action-btn:hover { background-color: #50659e; }
+
+    #results {
+      margin-top: 30px;
+      background: white;
+      padding: 30px 35px;
+      border-radius: 14px;
+      box-shadow: 0 8px 28px rgba(106, 133, 182, 0.3);
+      color: #1f1c2c;
+      border: 3px solid #6a85b6;
+      max-width: 100%;
+      min-height: 150px;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      white-space: pre-wrap;
+    }
+
+    #loading {
+      margin-top: 20px;
+      font-style: italic;
+      color: #6a85b6;
+      text-align: center;
+      font-weight: 600;
+      user-select: none;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+    }
+    #loading .spinner {
+      border: 4px solid #d6d6f7;
+      border-top: 4px solid #6a85b6;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin { 0% {transform: rotate(0deg);} 100% {transform: rotate(360deg);} }
+
+    #upload-section {
+      margin-top: 20px;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+    #upload-section input[type="file"] {
+      padding: 8px 10px;
+      border-radius: 12px;
+      border: 2px solid #6a85b6;
+      background: white;
+      cursor: pointer;
+      user-select: none;
+    }
+    #upload-section label { display: block; margin-bottom: 8px; font-weight: 600; user-select: none; }
+
+    #next-page-btn {
+      position: absolute;
+      bottom: 20px;
+      right: 30px;
+      padding: 10px 20px;
+      font-weight: 600;
+      font-size: 14px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      user-select: none;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+      background-color: #5cb85c;
+      color: white;
+    }
+    #next-page-btn:hover { background-color: #4cae4c; transform: translateY(-1px); }
+
+    #blank-page-placeholder {
+        color: #1f1c2c;
+        padding: 10px 20px 20px 20px; /* Adjusted padding */
+        text-align: center;
+        width: 100%;
+    }
+    #blank-page-placeholder p.info-text {
+        margin-bottom: 15px !important; /* !important to override generic p if needed */
+        font-size: 14px !important;
+        color: #555 !important;
+    }
+
+    .matched-companies-list, .salary-results-list {
+        list-style-type: decimal;
+        list-style-position: inside;
+        padding-left: 0;
+        margin: 15px auto 20px auto; /* Top margin added */
+        max-width: 90%; /* Responsive width */
+        text-align: left;
+    }
+     .matched-companies-list li, .salary-results-list li {
+        margin-bottom: 8px;
+        font-size: 16px;
+        color: #333;
+        padding: 8px;
+        border-bottom: 1px solid #eee;
+        background-color: #fdfdfd;
+        border-radius: 4px;
+    }
+    .matched-companies-list li:last-child, .salary-results-list li:last-child { border-bottom: none; }
+    .salary-results-list li strong { color: #1f1c2c; }
+    .matched-companies-list li strong { color: #1f1c2c; } /* Added for consistency */
+
+
+    .preferred-company-input {
+        display: block;
+        width: 90%;
+        max-width: 400px; /* Increased max-width */
+        padding: 10px 12px; /* Adjusted padding */
+        margin: 10px auto; /* Increased margin */
+        border: 1.5px solid #bdc3c7; /* Softer border */
+        border-radius: 6px;
+        font-size: 15px;
+        color: #333; /* Darker text for input */
+    }
+    .preferred-company-input:focus {
+        border-color: #6a85b6;
+        box-shadow: 0 0 5px rgba(106, 133, 182, 0.5);
+        outline: none;
+    }
+
+
+    button.app-button { /* Common style for app buttons like 'Analyze Salaries' */
+        background-color: #5cb85c;
+        color: white;
+        padding: 12px 24px;
+        font-size: 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-top: 20px;
+        margin-bottom: 15px;
+        border: none;
+        font-weight: 600;
+        transition: background-color 0.3s ease;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    button.app-button:hover { background-color: #4a9d4a; }
+
+    #salary-analysis-results {
+        text-align: left;
+        max-width: 90%; /* Responsive width */
+        margin: 25px auto; /* Increased top margin */
+        padding: 20px; /* Increased padding */
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1); /* Softer shadow */
+    }
+    #salary-analysis-results h3 {
+        margin-top: 0;
+        margin-bottom: 15px; /* Increased margin */
+        color: #1f1c2c; /* Consistent heading color */
+        text-align: center;
+        font-size: 1.3em; /* Slightly larger */
+    }
+     hr.section-divider {
+        border: 0;
+        height: 1px;
+        background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(31, 28, 44, 0.25), rgba(0, 0, 0, 0)); /* Fancier divider */
+        margin: 30px 0; /* Increased margin */
+    }
+
+  </style>
+</head>
+<body>
+  <section id="login-section">
+    <h1 id="form-title">Techpro Login</h1>
+    <div id="login-error" class="alert" style="display:none;"></div>
+    <div class="input-group">
+      <input id="email" type="email" placeholder=" " autocomplete="username" />
+      <label for="email">Email</label>
+    </div>
+    <div class="input-group">
+      <input id="password" type="password" placeholder=" " autocomplete="current-password" />
+      <label for="password">Password</label>
+    </div>
+    <button id="login-btn">Log In</button>
+    <button id="toggle-register">Don't have an account? Register</button>
+  </section>
+
+  <section id="app">
+    <div id="header-bar">
+      <button id="home-btn">Home</button>
+      <button id="logout-btn" class="logout-btn">Logout</button>
+    </div>
+    <h1 id="app-main-title">AI Resume Analyzer + Job Matcher</h1>
+    <div id="upload-section">
+      <label for="pdf-upload-input">Upload Resume (PDF only):</label>
+      <input type="file" id="pdf-upload-input" accept="application/pdf" />
+    </div>
+    <textarea id="resume-text" placeholder="Or paste your resume text here..."></textarea>
+    <button id="analyze-btn" class="main-action-btn">Analyze & Match Jobs</button>
+    <div id="loading" style="display:none;">
+      <div class="spinner"></div> Processing your resume...
+    </div>
+    <pre id="results" style="display:none;"></pre>
+    <button id="next-page-btn">Next Page</button>
+    <div id="blank-page-placeholder" style="display:none;"></div>
+  </section>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.9.179/pdf.min.js"></script>
+  <script>
+    function loadUsers() { return JSON.parse(localStorage.getItem('users') || '{}'); }
+    function saveUsers(users) { localStorage.setItem('users', JSON.stringify(users)); }
+    let users = loadUsers();
+    if (!users['user@example.com']) {
+      users['user@example.com'] = 'TechproSecure123';
+      saveUsers(users);
+    }
+
+    const loginSection = document.getElementById('login-section');
+    const appSection = document.getElementById('app');
+    const loginBtn = document.getElementById('login-btn');
+    const logoutBtn = document.getElementById('logout-btn');
+    const homeBtn = document.getElementById('home-btn');
+    const loginError = document.getElementById('login-error');
+    const toggleRegisterBtn = document.getElementById('toggle-register');
+    const formTitle = document.getElementById('form-title');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+
+    const nextPageBtn = document.getElementById('next-page-btn');
+    const appTitleH1 = document.getElementById('app-main-title');
+    const uploadSection = document.getElementById('upload-section');
+    const resumeTextArea = document.getElementById('resume-text');
+    const analyzeBtn = document.getElementById('analyze-btn');
+    const loadingDiv = document.getElementById('loading');
+    const resultsPre = document.getElementById('results');
+    const pdfUploadInput = document.getElementById('pdf-upload-input');
+    
+    let matchedCompaniesList = [];
+    let isRegisterMode = false;
+
+    function showMessage(message, isError = true) {
+      loginError.textContent = message;
+      loginError.className = isError ? 'alert' : 'alert success';
+      loginError.style.display = 'block';
+    }
+    function clearMessage() {
+      loginError.textContent = '';
+      loginError.style.display = 'none';
+    }
+
+    toggleRegisterBtn.addEventListener('click', () => {
+      clearMessage();
+      isRegisterMode = !isRegisterMode;
+      formTitle.textContent = isRegisterMode ? 'Register New Account' : 'Techpro Login';
+      loginBtn.textContent = isRegisterMode ? 'Register' : 'Log In';
+      toggleRegisterBtn.textContent = isRegisterMode ? 'Already have an account? Log In' : "Don't have an account? Register";
+      emailInput.value = ''; passwordInput.value = '';
+    });
+
+    loginBtn.addEventListener('click', () => {
+      clearMessage();
+      const email = emailInput.value.trim().toLowerCase();
+      const password = passwordInput.value.trim();
+      if (!email || !password) { showMessage('Please enter both email and password.'); return; }
+      if (isRegisterMode) {
+        users = loadUsers();
+        if (users[email]) { showMessage('This email is already registered. Please log in.'); return; }
+        users[email] = password; saveUsers(users);
+        showMessage('Registration successful! You can now log in.', false);
+        isRegisterMode = false; formTitle.textContent = 'Techpro Login'; loginBtn.textContent = 'Log In';
+        toggleRegisterBtn.textContent = "Don't have an account? Register";
+        emailInput.value = ''; passwordInput.value = '';
+      } else {
+        users = loadUsers();
+        if (users[email] && users[email] === password) {
+          localStorage.setItem('loggedInUser', email); showApp();
+        } else { showMessage('Invalid email or password.'); }
+      }
+    });
+
+    logoutBtn.addEventListener('click', () => { localStorage.removeItem('loggedInUser'); showLogin(); });
+    homeBtn.addEventListener('click', () => { showMainAppContent(); });
+
+    function showMainAppContent() {
+        if(appTitleH1) appTitleH1.style.display = 'block';
+        if(uploadSection) uploadSection.style.display = 'block';
+        if(resumeTextArea) resumeTextArea.style.display = 'block';
+        if(analyzeBtn) analyzeBtn.style.display = 'block';
+        if(nextPageBtn) nextPageBtn.style.display = 'block';
+        if(resultsPre) resultsPre.style.display = 'none'; // Hide results on home by default
+        if(loadingDiv) loadingDiv.style.display = 'none';
+        const blankPagePlaceholder = document.getElementById('blank-page-placeholder');
+        if (blankPagePlaceholder) blankPagePlaceholder.style.display = 'none';
+         // Reset resume text and file input when returning home
+        if(resumeTextArea) resumeTextArea.value = '';
+        if(pdfUploadInput) pdfUploadInput.value = '';
+        // matchedCompaniesList = []; // Optionally reset matches when going home
+    }
+
+    // START: Modified showBlankPage function
+    function showBlankPage() {
+        if(appTitleH1) appTitleH1.style.display = 'none';
+        if(uploadSection) uploadSection.style.display = 'none';
+        if(resumeTextArea) resumeTextArea.style.display = 'none';
+        if(analyzeBtn) analyzeBtn.style.display = 'none';
+        if(resultsPre) resultsPre.style.display = 'none';
+        if(loadingDiv) loadingDiv.style.display = 'none';
+        if(nextPageBtn) nextPageBtn.style.display = 'none';
+
+        const blankPagePlaceholder = document.getElementById('blank-page-placeholder');
+        blankPagePlaceholder.innerHTML = ''; // Clear previous dynamic content
+
+        let contentHTML = '';
+
+        // Section 1: AI Matched Companies
+        contentHTML += `<h2>AI Matched Companies & Simulated Salaries</h2>`;
+        if (matchedCompaniesList && matchedCompaniesList.length > 0) {
+            contentHTML += `<p class="info-text" style="text-align:left; max-width: 90%; margin: 10px auto;">Based on your resume, we found these potential matches. Simulated salary ranges (May 2025, primarily USD examples unless stated) are shown for illustrative purposes:</p><ul class="matched-companies-list">`;
+            matchedCompaniesList.forEach(companyName => {
+                const salary = simulateSalaryForCompany(companyName); // Get salary
+                contentHTML += `<li>${companyName} - <strong>Simulated Salary:</strong> ${salary}</li>`; // Display with salary
+            });
+            contentHTML += `</ul>`;
+        } else {
+            contentHTML += `<p class="info-text">No AI matches found from your resume analysis yet. You can analyze your resume on the Home page, or enter preferred companies below.</p>`;
+        }
+        contentHTML += `<hr class="section-divider">`;
+
+        // Section 2: Input Preferred Companies
+        contentHTML += `<h2>Enter Your Preferred Companies for Salary Analysis</h2>`;
+        contentHTML += `<p class="info-text">Enter up to 10 company names to get a simulated salary analysis for them.</p>`;
+        contentHTML += `<div id="preferred-companies-input-area">`;
+        for (let i = 0; i < 10; i++) {
+            contentHTML += `<input type="text" class="preferred-company-input" placeholder="Preferred Company ${i + 1}">`;
+        }
+        contentHTML += `</div>`;
+        contentHTML += `<button id="analyze-salary-btn" class="app-button">Analyze Salaries for Preferred Companies</button>`;
+        contentHTML += `<div id="salary-analysis-results" style="margin-top: 20px; display: none;"></div>`; // Placeholder for salary results, initially hidden
+        contentHTML += `<hr class="section-divider">`;
+        
+        contentHTML += `<p class="info-text" style="margin-top:20px;">Click "Home" in the top right to return to the resume analyzer.</p>`;
+
+        blankPagePlaceholder.innerHTML = contentHTML;
+        blankPagePlaceholder.style.display = 'block';
+
+        // Add event listener to the newly created button
+        const analyzeSalaryBtn = document.getElementById('analyze-salary-btn');
+        if (analyzeSalaryBtn) {
+            analyzeSalaryBtn.addEventListener('click', handleSalaryAnalysis);
+        }
+    }
+    // END: Modified showBlankPage function
+
+    // START: New function to handle salary analysis (from original, kept for preferred companies)
+    function handleSalaryAnalysis() {
+        const resultsContainer = document.getElementById('salary-analysis-results');
+        resultsContainer.innerHTML = ''; // Clear previous results
+        const preferredInputs = document.querySelectorAll('.preferred-company-input');
+        let hasInput = false;
+        let salaryResultsHTML = '<h3>Simulated Salary Analysis:</h3><ul class="salary-results-list">';
+
+        preferredInputs.forEach(input => {
+            const companyName = input.value.trim();
+            if (companyName) {
+                hasInput = true;
+                const salary = simulateSalaryForCompany(companyName);
+                salaryResultsHTML += `<li><strong>${companyName}:</strong> ${salary}</li>`;
+            }
+        });
+
+        if (!hasInput) {
+            salaryResultsHTML += "<li>Please enter at least one company name above.</li>";
+        }
+        salaryResultsHTML += "</ul><p class='info-text' style='font-size:0.8em; text-align:center; margin-top:10px;'>Note: Salary data is illustrative, simulated for demonstration (May 2025), and may not reflect actual market rates. Currency is shown in USD for example purposes, unless otherwise specified for certain regions/companies.</p>";
+        resultsContainer.innerHTML = salaryResultsHTML;
+        resultsContainer.style.display = 'block'; // Ensure it's visible
+    }
+    // END: New function
+
+    // START: Modified function to simulate salary
+    function simulateSalaryForCompany(companyName) {
+        if (!companyName || !companyName.trim()) return "N/A";
+
+        // Enhanced list of known salaries (USD unless specified)
+        const knownSalaries = {
+            "Google": "Approx. $120,000 - $180,000 per year", // Also covers "Google India" with USD example
+            "Microsoft": "Approx. $110,000 - $170,000 per year", // Also covers "Microsoft India"
+            "Amazon": "Approx. $115,000 - $175,000 per year",
+            "Facebook": "Approx. $125,000 - $185,000 per year", // Meta
+            "Apple": "Approx. $130,000 - $190,000 per year",
+            "Netflix": "Approx. $140,000 - $220,000 per year",
+            "Salesforce": "Approx. $100,000 - $160,000 per year",
+            "Adobe": "Approx. $105,000 - $165,000 per year",
+            "Oracle": "Approx. $95,000 - $150,000 per year",
+            "IBM": "Approx. $90,000 - $140,000 per year",
+            "Intel": "Approx. $100,000 - $155,000 per year",
+            "Nvidia": "Approx. $130,000 - $200,000 per year",
+
+            "Innovatech Solutions": "Approx. $90,000 - $130,000 per year",
+            "Web Wizards Inc.": "Approx. $80,000 - $110,000 per year",
+            "DataDriven Corp.": "Approx. $95,000 - $140,000 per year",
+            "CodeCrafters Ltd.": "Approx. $85,000 - $125,000 per year",
+            "PixelPerfect Design": "Approx. $75,000 - $105,000 per year",
+            "AI Core Systems": "Approx. $100,000 - $160,000 per year",
+            "Frontend Masters": "Approx. $80,000 - $115,000 per year",
+            "Backend Builders": "Approx. $85,000 - $120,000 per year",
+            "CloudNet Services": "Approx. $90,000 - $150,000 per year",
+            "SecureSoft Co.": "Approx. $95,000 - $145,000 per year",
+            "MobileFirst Devs": "Approx. $80,000 - $120,000 per year",
+            "Analytica Insights": "Approx. $90,000 - $135,000 per year",
+            "DevOps Experts": "Approx. $100,000 - $155,000 per year",
+            "Creative Solutions": "Approx. $70,000 - $100,000 per year",
+            "TechLeap Inc.": "Approx. $85,000 - $125,000 per year",
+            
+            "Infosys": "Approx. ₹10,00,000 - ₹18,00,000 per year (INR Example)",
+            "Wipro": "Approx. ₹9,00,000 - ₹17,00,000 per year (INR Example)",
+            "Tech Mahindra": "Approx. ₹12,00,000 - ₹20,00,000 per year (INR Example)",
+            "Tata Consultancy Services": "Approx. ₹10,00,000 - ₹19,00,000 per year (INR Example)", // TCS
+            "HCL Technologies": "Approx. ₹9,50,000 - ₹17,50,000 per year (INR Example)",
+
+            "Techpro Corp": "Approx. $90,000 - $150,000 per year",
+            "OpenAI Labs": "Approx. $130,000 - $200,000 per year"
+        };
+
+        const companyNameLower = companyName.toLowerCase();
+        for (const knownCompany in knownSalaries) {
+            // Match if the input company name *contains* a known company key (case-insensitive)
+            // This helps match "Google India" to "Google" or "Innovatech Solutions (AI Focus)" to "Innovatech Solutions"
+            if (companyNameLower.includes(knownCompany.toLowerCase())) {
+                return knownSalaries[knownCompany];
+            }
+        }
+        // Random salary for other companies not in the detailed list
+        const minBase = 60 + Math.floor(Math.random() * 70); // e.g., 60-129k
+        const range = 20 + Math.floor(Math.random() * 40);   // e.g., 20-59k range
+        const maxBase = minBase + range;
+        return `Approx. $${minBase},000 - $${maxBase},000 per year (Simulated Estimate)`;
+    }
+    // END: Modified function
+
+    function showApp() {
+      loginSection.style.display = 'none'; appSection.style.display = 'flex';
+      clearMessage(); emailInput.value = ''; passwordInput.value = '';
+      if(resumeTextArea) resumeTextArea.value = ''; 
+      if(pdfUploadInput) pdfUploadInput.value = '';
+      matchedCompaniesList = []; // Reset matched companies when app loads initially or after login
+      showMainAppContent();
+    }
+
+    function showLogin() {
+      appSection.style.display = 'none'; loginSection.style.display = 'flex';
+      clearMessage();
+      const blankPagePlaceholder = document.getElementById('blank-page-placeholder');
+      if (blankPagePlaceholder) blankPagePlaceholder.style.display = 'none';
+    }
+
+    window.addEventListener('load', () => {
+      const loggedInUser = localStorage.getItem('loggedInUser'); users = loadUsers();
+      if (loggedInUser && users[loggedInUser]) { showApp(); } 
+      else { localStorage.removeItem('loggedInUser'); showLogin(); }
+    });
+
+    pdfUploadInput.addEventListener('change', (e) => {
+      const file = e.target.files[0]; if (!file) return;
+      if (file.type !== 'application/pdf') {
+        alert('Please upload a valid PDF file.'); if(pdfUploadInput) pdfUploadInput.value = ''; return;
+      }
+      const reader = new FileReader();
+      reader.onload = function() {
+        const typedarray = new Uint8Array(this.result);
+        // Ensure pdfjsLib is available (it's included via CDN)
+        if (typeof pdfjsLib === 'undefined') {
+            alert('PDF library is not loaded. Please check your internet connection or script inclusion.');
+            return;
+        }
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.9.179/pdf.worker.min.js';
+
+        pdfjsLib.getDocument(typedarray).promise.then(pdf => {
+          let maxPages = pdf.numPages; let countPromises = [];
+          for(let j = 1; j <= maxPages; j++) {
+            let page = pdf.getPage(j);
+            countPromises.push(page.then(p => p.getTextContent().then(tc => tc.items.map(item => item.str).join(' '))));
+          }
+          Promise.all(countPromises).then(texts => { resumeTextArea.value = texts.join('\n\n'); });
+        }).catch(error => {
+            console.error("Error parsing PDF:", error);
+            alert("Could not read text from PDF. The PDF might be image-based or corrupted.");
+            resumeTextArea.value = ''; // Clear textarea
+        });
+      };
+      reader.readAsArrayBuffer(file);
+    });
+
+    function generateDummyCompanies(skills, count) {
+        const baseCompanies = [
+            "Innovatech Solutions (AI Focus)", "Web Wizards Inc. (Web Dev)", "DataDriven Corp. (Data Science)",
+            "CodeCrafters Ltd. (Software Eng.)", "PixelPerfect Design (UI/UX)", "AI Core Systems (Machine Learning)",
+            "Frontend Masters (React/Vue)", "Backend Builders (Node/Java)", "CloudNet Services (AWS/Azure)",
+            "SecureSoft Co. (Cybersecurity)", "MobileFirst Devs (iOS/Android)", "Analytica Insights (Big Data)",
+            "DevOps Experts (CI/CD)", "Creative Solutions (Full Stack)", "TechLeap Inc. (Emerging Tech)",
+            "Google India", "Microsoft India", "Infosys", "Wipro", "Tech Mahindra", "Amazon Web Services", "Salesforce CRM",
+            "Tata Consultancy Services", "HCL Technologies India"
+        ];
+        let selectedCompanies = new Set();
+        if (skills && skills.length > 0) {
+            if (skills.some(s => s.toLowerCase().includes("ai") || s.toLowerCase().includes("machine learning"))) {selectedCompanies.add(baseCompanies[0]); selectedCompanies.add(baseCompanies[5]);}
+            if (skills.some(s => s.toLowerCase().includes("javascript") || s.toLowerCase().includes("html") || s.toLowerCase().includes("css") || s.toLowerCase().includes("react"))) {selectedCompanies.add(baseCompanies[1]); selectedCompanies.add(baseCompanies[6]);}
+            if (skills.some(s => s.toLowerCase().includes("data") || s.toLowerCase().includes("analyt"))) {selectedCompanies.add(baseCompanies[2]); selectedCompanies.add(baseCompanies[11]);}
+            if (skills.some(s => s.toLowerCase().includes("aws") || s.toLowerCase().includes("cloud"))) {selectedCompanies.add(baseCompanies[8]); selectedCompanies.add(baseCompanies[20]);}
+            if (skills.some(s => s.toLowerCase().includes("java") || s.toLowerCase().includes("python") && !s.toLowerCase().includes("ai"))) {selectedCompanies.add(baseCompanies[7]);selectedCompanies.add(baseCompanies[3]);}
+        }
+        
+        // Fill with more diverse companies if specific skill matches are few
+        let i = 0;
+        const shuffledBase = [...baseCompanies].sort(() => 0.5 - Math.random()); // Shuffle for variety
+        while (selectedCompanies.size < count && i < shuffledBase.length) {
+            selectedCompanies.add(shuffledBase[i]);
+            i++;
+        }
+        return Array.from(selectedCompanies).slice(0, count);
+    }
+
+    analyzeBtn.addEventListener('click', () => {
+      const currentResumeText = resumeTextArea.value.trim();
+      if (!currentResumeText) { alert('Please upload a PDF or paste your resume text.'); return; }
+      matchedCompaniesList = []; 
+      resultsPre.style.display = 'none'; loadingDiv.style.display = 'flex';
+      nextPageBtn.style.display = 'none'; // Hide next page button during analysis
+
+      setTimeout(() => {
+        loadingDiv.style.display = 'none';
+        // Simulate skill extraction (in a real app, this would be complex)
+        let simulatedSkills = ["JavaScript", "HTML", "CSS", "AI", "Resume Parsing", "Data Analysis", "Cloud", "Python"];
+        if (currentResumeText.toLowerCase().includes("java")) simulatedSkills.push("Java");
+        if (currentResumeText.toLowerCase().includes("project manag")) simulatedSkills.push("Project Management");
+        if (currentResumeText.toLowerCase().includes("react") || currentResumeText.toLowerCase().includes("angular") || currentResumeText.toLowerCase().includes("vue")) simulatedSkills.push("Frontend Frameworks");
+
+
+        matchedCompaniesList = generateDummyCompanies(simulatedSkills, 10); // Get 10 companies
+        
+        const dummyResult = `
+Resume Analysis (Simulated):
+- Length: ${currentResumeText.length} characters
+- Detected Keywords/Skills: ${simulatedSkills.slice(0, 5).join(', ')}... (and more)
+- Estimated Experience Level: Intermediate (Simulated)
+
+Job Role Themes Matched (Simulated):
+1. Software Engineer / Developer
+2. AI/ML Specialist (if applicable keywords found)
+3. Data Analyst / Scientist (if applicable keywords found)
+
+Top AI Matched Companies (Simulated):
+${matchedCompaniesList.slice(0, 3).map((c, idx) => `${idx + 1}. ${c}`).join('\n')}
+...(more matches available)
+
+View "Next Page" for a detailed list of matched companies with simulated salary ranges and to analyze salaries for your preferred companies.
+`;
+        resultsPre.textContent = dummyResult.trim(); 
+        resultsPre.style.display = 'block';
+        nextPageBtn.style.display = 'block'; // Show next page button after analysis
+      }, 2500);
+    });
+
+    nextPageBtn.addEventListener('click', () => { showBlankPage(); });
+  </script>
+</body>
+</html>
+
