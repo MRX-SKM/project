@@ -20,4 +20,4 @@ def extract_skills(text, skill_set):
 text = extract_resume_text("resume.pdf")
 print("Name:", extract_name(text))
 print("Skills:", extract_skills(text, ["Python", "Django", "TensorFlow"]))
-
+print("completed buddy")
