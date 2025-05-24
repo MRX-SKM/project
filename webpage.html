@@ -494,6 +494,60 @@
         users = loadUsers();
         if (users[email] && users[email] === password) {
           localStorage.setItem('loggedInUser', email); showApp();
+      clearMessage();
+      isRegisterMode = !isRegisterMode;
+      formTitle.textContent = isRegisterMode ? 'Register New Account' : 'Techpro Login';
+      loginBtn.textContent = isRegisterMode ? 'Register' : 'Log In';
+      toggleRegisterBtn.textContent = isRegisterMode ? 'Already have an account? Log In' : "Don't have an account? Register";
+      emailInput.value = ''; passwordInput.value = '';
+    });
+
+    loginBtn.addEventListener('click', () => {
+      clearMessage();
+      const email = emailInput.value.trim().toLowerCase();
+      const password = passwordInput.value.trim();
+      if (!email || !password) { showMessage('Please enter both email and password.'); return; }
+      if (isRegisterMode) {
+        users = loadUsers();
+        if (users[email]) { showMessage('This email is already registered. Please log in.'); return; }
+        users[email] = password; saveUsers(users);
+        showMessage('Registration successful! You can now log in.', false);
+        isRegisterMode = false; formTitle.textContent = 'Techpro Login'; loginBtn.textContent = 'Log In';
+        toggleRegisterBtn.textContent = "Don't have an account? Register";
+        emailInput.value = ''; passwordInput.value = '';
+      } else {
+        users = loadUsers();
+        if (users[email] && users[email] === password) {
+          localStorage.setItem('loggedInUser', email); showApp();
+        } else { showMessage('Invalid email or password.'); }
+      }
+    });
+
+    logoutBtn.addEventListener('click', () => { localStorage.removeItem('loggedInUser'); showLogin(); });
+    homeBtn.addEventListener('click', () => { showMainAppContent(); });
+
+    function showMainAppContent() {
+        if(appTitleH1) appTitleH1.style.display = 'block';
+        if(uploadSection) uploadSection.style.display = 'block';
+        if(resumeTextArea) resumeTextArea.style.display = 'block';
+        if(analyzeBtn) analyzeBtn.style.display = 'block';
+        if(nextPageBtn) nextPageBtn.style.display = 'block';
+        if(resultsPre) resultsPre.style.display = 'none'; // Hide results on home by default
+        if(loadingDiv) loadingDiv.style.display = 'none';
+        const blankPagePlaceholder = document.getElementById('blank-page-placeholder');
+        if (blankPagePlaceholder) blankPagePlaceholder.style.display = 'none';
+         // Reset resume text and file input when returning home
+        if(resumeTextArea) resumeTextArea.value = '';
+        if(pdfUploadInput) pdfUploadInput.value = '';
+        // matchedCompaniesList = []; // Optionally reset matches when going home
+    }
+
+    // START: Modified showBlankPage function
+    function showBlankPage() {
+        if(appTitleH1) appTitleH1.style.display = 'none';
+        if(uploadSection) uploadSection.style.display = 'none';
+webpage.html [unix] (18:50 22/05/2025)                                                                                                                             497,1 63%
+"webpage.html" [unix] 788L, 32891B
         } else { showMessage('Invalid email or password.'); }
       }
     });
@@ -785,4 +839,57 @@ View "Next Page" for a detailed list of matched companies with simulated salary 
   </script>
 </body>
 </html>
+            i++;
+        }
+        return Array.from(selectedCompanies).slice(0, count);
+    }
+
+    analyzeBtn.addEventListener('click', () => {
+      const currentResumeText = resumeTextArea.value.trim();
+      if (!currentResumeText) { alert('Please upload a PDF or paste your resume text.'); return; }
+      matchedCompaniesList = [];
+      resultsPre.style.display = 'none'; loadingDiv.style.display = 'flex';
+      nextPageBtn.style.display = 'none'; // Hide next page button during analysis
+
+      setTimeout(() => {
+        loadingDiv.style.display = 'none';
+        // Simulate skill extraction (in a real app, this would be complex)
+        let simulatedSkills = ["JavaScript", "HTML", "CSS", "AI", "Resume Parsing", "Data Analysis", "Cloud", "Python"];
+        if (currentResumeText.toLowerCase().includes("java")) simulatedSkills.push("Java");
+        if (currentResumeText.toLowerCase().includes("project manag")) simulatedSkills.push("Project Management");
+        if (currentResumeText.toLowerCase().includes("react") || currentResumeText.toLowerCase().includes("angular") || currentResumeText.toLowerCase().includes("vue")) simulatedSkills.push("Frontend Frameworks");
+
+
+        matchedCompaniesList = generateDummyCompanies(simulatedSkills, 10); // Get 10 companies
+
+        const dummyResult = `
+Resume Analysis (Simulated):
+- Length: ${currentResumeText.length} characters
+- Detected Keywords/Skills: ${simulatedSkills.slice(0, 5).join(', ')}... (and more)
+- Estimated Experience Level: Intermediate (Simulated)
+
+Job Role Themes Matched (Simulated):
+1. Software Engineer / Developer
+2. AI/ML Specialist (if applicable keywords found)
+3. Data Analyst / Scientist (if applicable keywords found)
+
+Top AI Matched Companies (Simulated):
+${matchedCompaniesList.slice(0, 3).map((c, idx) => `${idx + 1}. ${c}`).join('\n')}
+...(more matches available)
+
+View "Next Page" for a detailed list of matched companies with simulated salary ranges and to analyze salaries for your preferred companies.
+`;
+        resultsPre.textContent = dummyResult.trim();
+        resultsPre.style.display = 'block';
+        nextPageBtn.style.display = 'block'; // Show next page button after analysis
+      }, 2500);
+    });
+
+    nextPageBtn.addEventListener('click', () => { showBlankPage(); });
+  </script>
+</body>
+</html>
+
+webpage.html[+] [unix] (18:50 22/05/2025)                                                                                                                          842,1 Bot
+-- INSERT --
 
